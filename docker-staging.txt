@@ -1,0 +1,18 @@
+# develop stage - pull images dari docker hub mengambil dari repo node:lts-alpine
+# install dependencies yang diperlukan oleh vue app yang kita buat
+FROM node:lts-alpine as develop-stage
+WORKDIR /app
+COPY package*.json ./
+RUN yarn install
+COPY . .
+
+# build stage - merubah nama dari develop menjadi build,
+# melakukan build dependencies 
+FROM develop-stage as build-stage
+RUN yarn build
+
+# production stage - pull images dari docker hub mengambil dari repo nginx:lts-alpine
+FROM nginx:lts-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

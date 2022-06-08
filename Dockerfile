@@ -1,0 +1,1 @@
+FROM haigerhana/vueapp:acengapp as develop-stage
